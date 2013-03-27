@@ -1,0 +1,4 @@
+Sample playbook for installing redmine
+
+Needed to be able to quickly produce and repeat an install of redmine
+to migrate an existing issue tracker. Hence this became so!

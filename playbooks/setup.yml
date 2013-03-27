@@ -1,0 +1,85 @@
+---
+- hosts: redmine
+  sudo: True
+
+  tasks:
+    - name: install epel repo
+      action: yum pkg=$item state=present
+      with_items:
+        - epel-release
+
+    - name: required packages
+      action: yum pkg=$item state=present
+      with_items:
+        - etckeeper
+        - git
+        - libxml2-devel
+        - ImageMagick-devel
+        - MySQL-python
+        - httpd
+        - mysql-devel
+        - mysql
+        - mysql-server
+
+    - name: disable iptables (dev)
+      service: name=iptables state=stopped
+
+    - name: ensure services are enabled and started
+      service: name=$item state=started enabled=yes
+      with_items:
+        - httpd
+        - mysqld
+
+    - name: download passenger release file
+      command: curl -O http://passenger.stealthymonkeys.com/rhel/6/passenger-release.noarch.rpm chdir=/tmp creates=/tmp/passenger-release.noarch.rpm
+  
+    - name: install passenger release file
+      command: rpm -ivH /tmp/passenger-release.noarch.rpm creates=/etc/yum.repos.d/passenger.repo
+  
+    - name: install mod passenger
+      yum: name=mod_passenger state=present
+      notify:
+        - restart httpd 
+
+    - name: clone redmine stable repo
+      git: repo=https://github.com/redmine/redmine.git dest=/var/www/redmine version=2.3-stable
+
+    - name: install bundler
+      command: gem install bundler creates=/usr/bin/bundle
+
+    - name: install dependancies for redmine
+      command: bundle install --without development test chdir=/var/www/redmine
+
+    - name: install redmine httpd conf
+      template: src=../templates/redmine.conf dest=/etc/httpd/conf.d/redmine.conf
+      notify:
+        - restart httpd
+
+    - name: generate secret token
+      command: rake generate_secret_token chdir=/var/www/redmine
+
+    - name: create db
+      mysql_db: db=redmine state=present
+      notify:
+        - restart mysqld
+
+    - name: create user for redmine db
+      mysql_user: state=present name=redmine password=redmine priv=redmine.*:ALL
+      notify:
+        - restart mysqld
+
+    - name: install redmine database.yml
+      template: src=../templates/database.yml dest=/var/www/redmine/config/database.yml
+
+    - name: initialise db for redmine
+      command: rake db:migrate RAILS_ENV=production chdir=/var/www/redmine
+
+    - name: load default data into redmine
+      command: rake redmine:load_default_data RAILS_ENV=production chdir=/var/www/redmine
+
+  handlers:
+    - name: restart httpd
+      action: service name=httpd state=restarted
+
+    - name: restart mysqld
+      action: service name=mysqld state=restarted
