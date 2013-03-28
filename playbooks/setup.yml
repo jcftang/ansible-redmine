@@ -86,6 +86,11 @@
     - name: initialise db for redmine
       command: rake db:migrate RAILS_ENV=production chdir=/var/www/redmine
 
+    - name: create some temp/cache directories
+      file: path=$item state=directory
+      with_items:
+        - /var/www/redmine/tmp/cache
+
     - name: load default data into redmine
       command: rake redmine:load_default_data RAILS_ENV=production REDMINE_LANG=${redmine_lang} chdir=/var/www/redmine
       notify:
