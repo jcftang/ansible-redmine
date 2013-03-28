@@ -66,6 +66,9 @@
     - name: clone redmine stable repo
       git: repo=https://github.com/redmine/redmine.git dest=/var/www/redmine version=2.3-stable
 
+    - name: install redmine database.yml
+      template: src=../templates/database.yml dest=/var/www/redmine/config/database.yml
+
     - name: install bundler
       command: gem install bundler creates=/usr/bin/bundle
 
@@ -79,9 +82,6 @@
 
     - name: generate secret token
       command: rake generate_secret_token chdir=/var/www/redmine
-
-    - name: install redmine database.yml
-      template: src=../templates/database.yml dest=/var/www/redmine/config/database.yml
 
     - name: initialise db for redmine
       command: rake db:migrate RAILS_ENV=production chdir=/var/www/redmine
