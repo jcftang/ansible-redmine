@@ -87,7 +87,9 @@
       command: rake db:migrate RAILS_ENV=production chdir=/var/www/redmine
 
     - name: load default data into redmine
-      command: rake redmine:load_default_data RAILS_ENV=production chdir=/var/www/redmine
+      command: rake redmine:load_default_data RAILS_ENV=production REDMINE_LANG=${redmine_lang} chdir=/var/www/redmine
+      notify:
+        - restart httpd
 
   handlers:
     - include: ../handlers/common.yml

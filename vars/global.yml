@@ -2,3 +2,4 @@
 redmine_db: redmine
 redmine_dbuser: redmine
 redmine_dbpass: redmine
+redmine_lang: en
