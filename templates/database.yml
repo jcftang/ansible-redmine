@@ -5,10 +5,10 @@
 
 production:
   adapter: mysql2
-  database: redmine
+  database: {{ redmine_db }}
   host: localhost
-  username: redmine
-  password: redmine
+  username: {{ redmine_dbuser }}
+  password: {{ redmine_dbpass }}
   encoding: utf8
 
 development:

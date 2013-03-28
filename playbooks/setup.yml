@@ -2,6 +2,9 @@
 - hosts: redmine
   sudo: True
 
+  vars_files:
+    - ../vars/global.yml
+
   tasks:
     - name: install epel repo
       action: yum pkg=$item state=present
@@ -30,6 +33,22 @@
         - httpd
         - mysqld
 
+    ###
+    ### setup mysql for redmine
+    ###
+    - name: create db
+      mysql_db: db=${redmine_db} state=present
+      notify:
+        - restart mysqld
+
+    - name: create user for redmine db
+      mysql_user: state=present name=${redmine_dbuser} password=${redmine_dbpass} priv=${redmine_db}.*:ALL
+      notify:
+        - restart mysqld
+
+    ###
+    ### download and install passenger
+    ###
     - name: download passenger release file
       command: curl -O http://passenger.stealthymonkeys.com/rhel/6/passenger-release.noarch.rpm chdir=/tmp creates=/tmp/passenger-release.noarch.rpm
   
@@ -41,6 +60,9 @@
       notify:
         - restart httpd 
 
+    ###
+    ### download and install redmine
+    ###
     - name: clone redmine stable repo
       git: repo=https://github.com/redmine/redmine.git dest=/var/www/redmine version=2.3-stable
 
@@ -58,16 +80,6 @@
     - name: generate secret token
       command: rake generate_secret_token chdir=/var/www/redmine
 
-    - name: create db
-      mysql_db: db=redmine state=present
-      notify:
-        - restart mysqld
-
-    - name: create user for redmine db
-      mysql_user: state=present name=redmine password=redmine priv=redmine.*:ALL
-      notify:
-        - restart mysqld
-
     - name: install redmine database.yml
       template: src=../templates/database.yml dest=/var/www/redmine/config/database.yml
 
@@ -78,8 +90,4 @@
       command: rake redmine:load_default_data RAILS_ENV=production chdir=/var/www/redmine
 
   handlers:
-    - name: restart httpd
-      action: service name=httpd state=restarted
-
-    - name: restart mysqld
-      action: service name=mysqld state=restarted
+    - include: ../handlers/common.yml
