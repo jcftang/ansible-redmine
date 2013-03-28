@@ -1,0 +1,6 @@
+---
+  - name: restart httpd
+    action: service name=httpd state=restarted
+
+  - name: restart mysqld
+    action: service name=mysqld state=restarted
