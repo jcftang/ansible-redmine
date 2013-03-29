@@ -24,8 +24,8 @@
         - mysql
         - mysql-server
 
-    - name: disable iptables (dev)
-      service: name=iptables state=stopped
+    - name: enable http
+      command: lokkit -s http --enabled
 
     - name: ensure services are enabled and started
       service: name=$item state=started enabled=yes
