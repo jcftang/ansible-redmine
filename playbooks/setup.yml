@@ -50,10 +50,11 @@
     ### download and install passenger
     ###
     - name: download passenger release file
-      command: curl -O http://passenger.stealthymonkeys.com/rhel/6/passenger-release.noarch.rpm chdir=/tmp creates=/tmp/passenger-release.noarch.rpm
+      get_url: url=http://passenger.stealthymonkeys.com/rhel/6/passenger-release.noarch.rpm dest=/tmp/monkeys.com/rhel/6/passenger-release.noarch.rpm chdir=/tmp creates=/tmp/
   
     - name: install passenger release file
-      command: rpm -ivH /tmp/passenger-release.noarch.rpm creates=/etc/yum.repos.d/passenger.repo
+      yum: name=/tmp/passenger-release.noarch.rpm state=present
+      #command: rpm -ivH /tmp/passenger-release.noarch.rpm creates=/etc/yum.repos.d/passenger.repo
   
     - name: install mod passenger
       yum: name=mod_passenger state=present
@@ -92,7 +93,7 @@
         - /var/www/redmine/tmp/cache
 
     - name: chown the redmine directory apache user and group
-      command: chown -R apache:apache /var/www/redmine/tmp
+      file: path=/var/www/redmine  owner=apache group=apache recurse=yes
 
     - name: load default data into redmine
       command: rake redmine:load_default_data RAILS_ENV=production REDMINE_LANG=${redmine_lang} chdir=/var/www/redmine

@@ -28,8 +28,6 @@ Vagrant::Config.run do |global_config|
       "modifyvm", :id,
       "--name", "Redmine VM",
       "--memory", "1024",
-      "--natdnsproxy1", "off",
-      "--natdnshostresolver1", "off"
     ]
   end
 
