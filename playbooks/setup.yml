@@ -50,7 +50,7 @@
     ### download and install passenger
     ###
     - name: download passenger release file
-      get_url: url=http://passenger.stealthymonkeys.com/rhel/6/passenger-release.noarch.rpm dest=/tmp/monkeys.com/rhel/6/passenger-release.noarch.rpm chdir=/tmp creates=/tmp/
+      get_url: url=http://passenger.stealthymonkeys.com/rhel/6/passenger-release.noarch.rpm dest=/tmp/monkeys.com/rhel/6/passenger-release.noarch.rpm
   
     - name: install passenger release file
       yum: name=/tmp/passenger-release.noarch.rpm state=present
