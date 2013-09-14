@@ -6,8 +6,8 @@ Vagrant::Config.run do |global_config|
   # options are documented and commented below. For a complete reference,
   # please see the online documentation at vagrantup.com.
 
-  global_config.vm.box = "sl64-x86_64"
-  global_config.vm.box_url = "http://thammuz.tchpc.tcd.ie/mirrors/boxes/scientificlinux-6.4-x86_64-netboot-devops.box"
+  global_config.vm.box = "sl63-x86_64"
+  global_config.vm.box_url = "http://thammuz.tchpc.tcd.ie/mirrors/boxes/scientificlinux-6.3-x86_64-netboot-devops.box"
 
   global_config.vm.define(:redmine) do |config|
     config.vm.network :hostonly, "192.168.206.110"
