@@ -13,11 +13,11 @@ Upon first checkout ansible-redmine repo
     $ pwd
     /home/user/ansible-redmine/
     $ cd hacking
-    $ source hacking/env-setup
+    $ source env-setup
     $ bundle
     $ vagrant up
     $ cd ..
-    $ ansible-playbook playbooks/setup.yml
+    $ ansible-playbook -i hacking/hosts --private-key=hacking/keys/insecure_private_key -u vagrant  setup.yml
     
 
 The bundle command will install the needed components to run the vagrant
